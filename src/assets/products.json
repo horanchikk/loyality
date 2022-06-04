@@ -1,0 +1,32 @@
+[
+  {
+    "id": 0,
+    "name": "Кольцо 18K",
+    "price": "13494 ₽",
+    "img_link": "https://ae01.alicdn.com/kf/H50a5c51a03aa474eb5b9dcad1fe14f09f/With-Certificate-18K-White-Gold-Color-Rings-for-Women-2-0ct-Round-Zirconia-Diamond-Solitaire-Ring.jpg_Q90.jpg_.webp"
+  },
+  {
+    "id": 1,
+    "name": "Lenovo LP5",
+    "price": "2190 ₽",
+    "img_link": "https://ae01.alicdn.com/kf/S22a0563d7ba84bd7b1dd180c17b874efT/100-Original-Lenovo-LP5-Wireless-Bluetooth-Earbuds-HiFi-Music-Earphone-With-Mic-Headphones-Sports-Waterproof-Headset.jpg_Q90.jpg_.webp"
+  },
+  {
+    "id": 2,
+    "name": "Sandisk Ultra",
+    "price": "400 ₽",
+    "img_link": "https://ae01.alicdn.com/kf/Sd634a5c9156341e3bfa293de34e9a1efG/Sandisk-Ultra-Micro-SD-128GB-32GB-64GB-256GB-16G-400GB-Micro-SD-Card-SD-TF-Flash.jpg_Q90.jpg_.webp"
+  },
+  {
+    "id": 3,
+    "name": "SanDisk SDCZ430",
+    "price": "700 ₽",
+    "img_link": "https://ae01.alicdn.com/kf/Hab443aba07914ab6b5cd30f3ef3fe2f0O/SanDisk-SDCZ430-USB-3-1-Gen-1-Flash-Drive-256GB-128GB-64GB-32GB-16GB-Pen-Drive.jpg_Q90.jpg_.webp"
+  },
+  {
+    "id": 4,
+    "name": "Smart Plug WiFi",
+    "price": "3200 ₽",
+    "img_link": "https://ae01.alicdn.com/kf/H186b233a0024497699e1ec6fd9d40ee2t/Smart-Plug-WiFi-Socket-EU-16A-Power-Monitor-Timing-Function-Tuya-SmartLife-APP-Control-Works-With.jpg_Q90.jpg_.webp"
+  }
+]

@@ -7,29 +7,11 @@
         : 'text-white bg-orange-500 ring-orange-500 active:bg-orange-400 active:ring-orange-400'
     "
     @click="onClick"
-  >
-    <div class="flex items-center">
-      <LoadingIcon
-        class="w-7 px-0.5 animate-spin-slow"
-        :stroke="danger ? 'rgb(249 115 22)' : '#fffff0'"
-        :className="isLoading ? 'block' : 'hidden'"
-      />
-      <div v-if="(!isLoading ? isLoading : false) || $slots.icon" class="w-7">
-        <slot name="icon" />
-      </div>
-      <div
-        class="text-lg text-center w-full transition-padding"
-        :class="isLoading || $slots.icon ? 'pl-9 -ml-7' : ''"
-      >
-        <slot name="text" />
-      </div>
-    </div>
-  </button>
+  ></button>
 </template>
 
 <script lang="ts">
 import moby from "@mobyapps/moby.js";
-import LoadingIcon from "./LoadingIcon";
 
 export default {
   name: "Button",
@@ -38,9 +20,9 @@ export default {
       type: Boolean,
       default: false,
     },
-  },
-  components: {
-    LoadingIcon,
+    action: {
+      type: String,
+    },
   },
   data() {
     return {
@@ -49,11 +31,15 @@ export default {
   },
   methods: {
     async onClick() {
-      const barcode = await moby.barcode.scan([moby.barcode.symbology.qr]);
-      if (barcode.split("?")[0] == "loyality") {
-        this.$emit("setBarcode", barcode);
-      } else {
-        this.$emit("setBarcode", "splitError");
+      if (this.action == "barcode") {
+        const barcode = await moby.barcode.scan([moby.barcode.symbology.qr]);
+        if (barcode.split("?")[0] == "loyality") {
+          this.$emit("result", barcode);
+        } else {
+          this.$emit("result", "splitError");
+        }
+      } else if (this.action == "login") {
+        this.$emit("result", true);
       }
     },
   },
