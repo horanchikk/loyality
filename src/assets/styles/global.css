@@ -1,0 +1,134 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+html {
+    /* mobile viewport bug fix */
+    /* https://allthingssmitty.com/2020/05/11/css-fix-for-100vh-in-mobile-webkit/ */
+    /* height: -webkit-fill-available; */
+    min-height: 100vh;
+    scrollbar-color: #6969dd #e0e0e0;
+    scrollbar-width: thin;
+}
+
+:root {
+    --sait: var(--android-safe-area-inset-top, env(safe-area-inset-top));
+    --saib: var(--android-safe-area-inset-bottom, env(safe-area-inset-bottom));
+    --sail: var(--android-safe-area-inset-left, env(safe-area-inset-left));
+    --sair: var(--android-safe-area-inset-right, env(safe-area-inset-right));
+    /* header and etc */
+    --basic-header-height: 44px;
+    --header-height: 44px;
+    --footer-height: 44px;
+    --header-sait: calc(var(--header-height) + var(--sait));
+    --footer-saib: calc(var(--footer-height) + var(--saib));
+    --scrollbar-opacity: none;
+}
+
+.scrollbar::-webkit-scrollbar {
+    display: var(--scrollbar-opacity);
+    overflow: auto;
+    width: 9px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+     border: 3px solid rgba(0, 0, 0, 0);
+     background-clip: padding-box;
+     border-radius: 9999px;
+     background-color: #aaaaaa;
+}
+
+body {
+    /* FIX body from scroll*/
+    overflow: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    min-width: 100vw;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    /* Status bar height */
+    /* margin-top: calc(var(--header-height) + var(--sait)); */
+    /* Status bar height on iOS 11.0 */
+    /* padding-top: constant(safe-area-inset-top); */
+    /* Status bar height on iOS 11+ */
+    /* padding-top: env(safe-area-inset-top); */
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+div::-webkit-scrollbar {
+    display: none;
+}
+
+div {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /* Lets it scroll lazy */
+    /* -webkit-overflow-scrolling: touch; */
+    /* Stops scrolling immediately */
+    -webkit-overflow-scrolling: auto;
+    scrollbar-gutter: stable;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+a {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.header {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    height: calc(var(--header-height) + var(--sait));
+    z-index: 10;
+    justify-self: center;
+}
+
+.footer {
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    height: calc(var(--footer-height) + var(--saib));
+    z-index: 10;
+}
+
+.content {
+    width: 100vw;
+    overflow-y: auto;
+}
+
+.no_highlights {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
