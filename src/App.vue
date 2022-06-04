@@ -1,17 +1,32 @@
 <template>
   <div id="app">
     <Header>
-      <MainHeader :phone="user.phone" @login="sendlogin" />
+      <MainHeader
+        :phone="this.user.phone"
+        :logged="this.user.logged"
+        @sendlogin="sendlogin"
+      />
     </Header>
     <Content :header="true" :footer="false" :scroll="true" :scrollbar="true">
       <div
         class="w-screen flex flex-col items-center animate__animated animate__fadeInDown"
       >
         <!-- User -->
-        <div class="w-full py-3 font-bold text-lg mt-5 px-16 text-center">
+        <div
+          v-if="this.user.id != 0"
+          class="w-full py-3 font-bold text-lg mt-2 px-16 text-center"
+        >
           <p>ID: {{ this.user.id }}</p>
           <p>Баллы: {{ this.user.balance }}</p>
         </div>
+
+        <div
+          v-else
+          class="w-full py-3 font-bold text-lg mt-2 px-16 text-center"
+        >
+          <p>Для просмотра данных аккаунта, необходимо войти в него.</p>
+        </div>
+
         <div class="w-screen border-2" />
         <!-- Orders -->
         <p class="my-2 font-bold text-2xl text-center">
@@ -59,9 +74,8 @@
       </Button>
     </Footer>
 
-    <!-- Other Components -->
-    <Spinner v-if="spinner" />
     <Toast />
+
     <Dialog
       :visible.sync="dialog.show"
       :header="setHeader(dialog.state)"
@@ -91,14 +105,18 @@
           class="w-full flex gap-5 items-center justify-center"
           @click="login"
         >
-          <i class="pi pi-user-plus" />
+          <i
+            :class="this.load.login ? 'pi pi-spin pi-spinner' : 'pi pi-user'"
+          />
           Войти
         </Button>
         <Button
           class="w-full flex gap-5 items-center justify-center"
-          @click="login"
+          @click="reg"
         >
-          <i class="pi pi-user-plus" />
+          <i
+            :class="this.load.reg ? 'pi pi-spin pi-spinner' : 'pi pi-user-plus'"
+          />
           Зарегистрироваться
         </Button>
       </div>
@@ -116,7 +134,6 @@
 import Header from "./components/Header";
 import MainHeader from "./components/MainHeader";
 import Button from "primevue/button";
-import Spinner from "./components/Spinner";
 import Footer from "./components/Footer";
 import Content from "./components/Content.vue";
 
@@ -131,7 +148,6 @@ import firebase from "./firebase";
 export default {
   name: "App",
   components: {
-    Spinner,
     Footer,
     Header,
     MainHeader,
@@ -146,7 +162,6 @@ export default {
   data() {
     return {
       barcode: "",
-      spinner: false,
       products: products,
       user: {
         id: 0,
@@ -154,6 +169,7 @@ export default {
         phone: "",
         password: "",
         userType: null,
+        logged: false,
       },
       qrcode: {
         size: 300,
@@ -162,6 +178,10 @@ export default {
       dialog: {
         show: false,
         state: 1,
+      },
+      load: {
+        login: false,
+        reg: false,
       },
     };
   },
@@ -199,12 +219,12 @@ export default {
     },
     async login() {
       console.log("login");
+      this.load.login = true;
       if (this.user.phone != "" && this.user.password != "") {
         let doc = await firebase.logUser(this.user.phone, this.user.password);
         if (doc == "incorrect user or login") {
           this.user.phone == "";
           this.user.password == "";
-          // toast with error
           this.$toast.add({
             severity: "error",
             summary: "Неверный логин или пароль",
@@ -212,13 +232,55 @@ export default {
           });
           console.log(doc);
         } else {
+          this.user.id = doc.id;
+          this.user.balance = doc.balance;
+          this.user.userType = doc.userType;
+          this.user.logged = true;
           this.dialog.show = false;
         }
         // let doc = await firebase.regUser(this.user.phone, this.user.password);
       } else {
-        // toast with error
-        console.log("xd");
+        this.$toast.add({
+          severity: "error",
+          summary: "Введите логин и пароль",
+          life: 3000,
+        });
       }
+      this.load.login = false;
+    },
+    async reg() {
+      console.log("reg");
+      this.load.reg = true;
+      if (this.user.phone != "" && this.user.password != "") {
+        let doc = await firebase.regUser(this.user.phone, this.user.password);
+        if (
+          doc == "Этот пользователь уже зарегистрирован. " ||
+          doc == "Ошибка сервера. Попробуйте попытку позже"
+        ) {
+          this.user.phone == "";
+          this.user.password == "";
+          this.$toast.add({
+            severity: "error",
+            summary: doc,
+            life: 3000,
+          });
+          console.log(doc);
+        } else {
+          console.log(`registered as ${doc}`);
+          this.user.id = doc;
+          this.user.balance = 0;
+          this.user.userType = "user";
+          this.user.logged = true;
+          this.dialog.show = false;
+        }
+      } else {
+        this.$toast.add({
+          severity: "error",
+          summary: "Введите логин и пароль",
+          life: 3000,
+        });
+      }
+      this.load.reg = false;
     },
     showQr() {
       this.dialog.state = 3;

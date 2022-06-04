@@ -7,11 +7,11 @@
       @click="goback"
     >
       <i class="mx-2 pi pi-chevron-left"></i>
-      <div>Выход</div>
+      <div>Назад</div>
     </button>
     <div class="flex w-full justify-center items-center">Loyality</div>
     <button
-      v-if="phone != ''"
+      v-if="phone != '' && logged == true"
       class="group flex flex-row outline-none h-8 items-center ml-0 w-full pr-2"
       @click="logout"
     >
@@ -42,6 +42,10 @@ export default {
     phone: {
       type: String,
     },
+    logged: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {};
@@ -51,7 +55,7 @@ export default {
       moby.miniapp.pop(true, "");
     },
     async login() {
-      this.$emit("login", true);
+      this.$emit("sendlogin", true);
     },
     async logout() {
       this.$emit("login", false);

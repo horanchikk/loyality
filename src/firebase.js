@@ -30,23 +30,36 @@ export default {
           phone: phone,
           password: password,
           balance: 0,
+          userType: "user",
         });
         return `${docRef.id}`;
       } else {
         return `Этот пользователь уже зарегистрирован. `;
       }
     } catch (e) {
-      console.error("Error adding document: ", e);
+      return `Ошибка сервера: ${e}`;
     }
   },
   async logUser(phone, password) {
     const querySnapshot = await getDocs(collection(db, "users"));
+    let info;
     querySnapshot.forEach((doc) => {
       if (doc.data().phone == phone && doc.data().password == password) {
-        return doc.data().balance;
+        console.info(
+          `Logged in ${doc.data().id}. Balance ${doc.data().balance}`
+        );
+        info = {
+          bal: doc.data().balance,
+          id: doc.id,
+          userType: doc.data().userType,
+        };
+        console.log(info);
       }
     });
-    // TODO!!!
-    return "incorrect user or login";
+    if (info != undefined) {
+      return info;
+    } else {
+      return "incorrect user or login";
+    }
   },
 };
