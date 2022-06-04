@@ -4,25 +4,28 @@
   >
     <button
       class="group flex flex-row outline-none h-8 items-center ml-0 pr-2"
-      @click="onClick"
+      @click="onclick"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6 group-active:stroke-orange-500"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M15 19l-7-7 7-7"
-        />
-      </svg>
-      <div>{{ name }}</div>
+      <i class="mx-2 pi pi-chevron-left"></i>
+      <div>Выход</div>
     </button>
     <div class="flex w-full justify-center items-center">Loyality</div>
+    <button
+      v-if="this.$parent.username != null || this.$parent.username != undefined"
+      class="group flex flex-row outline-none h-8 items-center ml-0 pr-2"
+      @click="onClick"
+    >
+      <p>{{ this.$parent.username }}</p>
+      <i class="mx-2 pi pi-user-minus"></i>
+    </button>
+    <button
+      v-else
+      class="group flex flex-row outline-none h-8 items-center ml-0 pr-2"
+      @click="login"
+    >
+      <p>Войти</p>
+      <i class="mx-2 pi pi-user"></i>
+    </button>
   </div>
 </template>
 
@@ -33,12 +36,19 @@ export default {
   props: {
     name: {
       type: String,
-      default: "Close",
+      default: "Выход",
     },
   },
   methods: {
     onClick() {
       moby.miniapp.pop(true, "");
+    },
+    login() {
+      console.log("login");
+      console.log(this.$root.spinner);
+    },
+    logout() {
+      console.log("logout");
     },
   },
 };
