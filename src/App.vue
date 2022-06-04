@@ -42,14 +42,17 @@
             <div class="cursor-pointer">
               <!-- Id, Name, Price, Img -->
               <img :src="product.img_link" alt="img" class="h-44 w-full" />
-              <div class="flex justify-between px-5">
-                <p class="font-medium text-xl">
+              <div class="flex justify-between px-5 text-sm">
+                <p class="font-medium">
                   {{ product.name }}
                 </p>
-                <p class="font-medium text-xl">{{ product.price }}</p>
+                <p class="font-medium">{{ product.price }} ₽</p>
               </div>
             </div>
-            <Button class="w-full my-5 flex gap-5 items-center justify-center">
+            <Button
+              class="w-full my-5 flex gap-5 items-center justify-center"
+              @click="showQr(product.id)"
+            >
               Купить за баллы
               <i class="pi pi-wallet" />
             </Button>
@@ -74,7 +77,7 @@
       </Button>
     </Footer>
 
-    <Toast />
+    <Toast position="bottom-center" />
 
     <Dialog
       :visible.sync="dialog.show"
@@ -121,9 +124,17 @@
         </Button>
       </div>
 
-      <div v-if="dialog.state == 2" class=""></div>
+      <div v-if="dialog.state == 2" class="">
+        <p>Вы действительно хотите выйти?</p>
+        <div class="w-full flex my-4 px-10 justify-between">
+          <Button class="p-button-success" @click="logout"> Да</Button>
+          <Button class="p-button-danger" @click="dialog.show = false"
+            >Нет</Button
+          >
+        </div>
+      </div>
 
-      <div v-if="dialog.state == 3" class="">
+      <div v-if="dialog.state == 3">
         <QrcodeVue :value="qrcode.value" :size="qrcode.size" />
       </div>
     </Dialog>
@@ -187,7 +198,6 @@ export default {
   },
   methods: {
     setBarcode(barcode) {
-      // loyality?user_id:3&product_id:42
       this.barcode = barcode;
     },
     onSwiper(swiper) {
@@ -211,10 +221,10 @@ export default {
     sendlogin(state) {
       if (state == false) {
         this.dialog.show = true;
-        this.state.state = 2;
+        this.dialog.state = 2;
       } else if (state == true) {
         this.dialog.show = true;
-        this.state.state = 1;
+        this.dialog.state = 1;
       }
     },
     async login() {
@@ -282,9 +292,30 @@ export default {
       }
       this.load.reg = false;
     },
-    showQr() {
-      this.dialog.state = 3;
-      this.dialog.show = true;
+    async logout() {
+      this.user.id = 0;
+      this.user.balance = 0;
+      this.user.phone = "";
+      this.user.password = "";
+      this.user.userType = null;
+      this.user.logged = false;
+      this.$toast.add({
+        severity: "success",
+        summary: "Вы вышли из аккаунта",
+        life: 3000,
+      });
+      this.dialog.show = false;
+    },
+    showQr(product_id) {
+      // loyality?user_id:3&product_id:42
+      if (this.user.logged) {
+        this.qrcode.value = `loyality?user_id:${this.user.id}&product_id:${product_id}`;
+        this.dialog.state = 3;
+        this.dialog.show = true;
+      } else {
+        this.dialog.state = 1;
+        this.dialog.show = true;
+      }
     },
   },
 };

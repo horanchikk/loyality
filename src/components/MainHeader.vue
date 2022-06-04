@@ -12,7 +12,7 @@
     <div class="flex w-full justify-center items-center">Loyality</div>
     <button
       v-if="phone != '' && logged == true"
-      class="group flex flex-row outline-none h-8 items-center ml-0 w-full pr-2"
+      class="group flex flex-row outline-none h-8 items-center ml-0 pr-2 w-80 whitespace-nowrap"
       @click="logout"
     >
       <p>{{ phone }}</p>
@@ -58,7 +58,7 @@ export default {
       this.$emit("sendlogin", true);
     },
     async logout() {
-      this.$emit("login", false);
+      this.$emit("sendlogin", false);
     },
   },
 };
