@@ -50,7 +50,11 @@ export default {
   methods: {
     async onClick() {
       const barcode = await moby.barcode.scan([moby.barcode.symbology.qr]);
-      this.$emit("setBarcode", barcode);
+      if (barcode.split("?")[0] == "loyality") {
+        this.$emit("setBarcode", barcode);
+      } else {
+        this.$emit("setBarcode", "splitError");
+      }
     },
   },
 };

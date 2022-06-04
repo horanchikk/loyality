@@ -1,5 +1,7 @@
 <template>
-  <div class="flex items-center w-screen h-full">
+  <div
+    class="flex items-center w-screen h-full animate__animated animate__fadeInRight"
+  >
     <button
       class="group flex flex-row outline-none h-8 items-center ml-0 pr-2"
       @click="onClick"
@@ -20,6 +22,7 @@
       </svg>
       <div>{{ name }}</div>
     </button>
+    <div class="flex w-full justify-center items-center">Loyality</div>
   </div>
 </template>
 

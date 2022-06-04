@@ -4,18 +4,28 @@
       <CloseButton />
     </Header>
     <Content :header="true" :footer="false" :scroll="true" :scrollbar="true">
-      <div class="text-center mt-4 text-xl font-bold">Loyality System</div>
-      <div class="mt-6 text-center">
+      <div
+        class="w-screen flex flex-col justify-center items-center animate__animated animate__fadeInDown"
+      >
+        <div class="w-full py-3 font-bold mt-5 text-right px-16">
+          <p>ID: {{ this.userID }}</p>
+          <p>Баллы: {{ this.balance }}</p>
+        </div>
+
         <Button class="w-56" @setBarcode="setBarcode">
-          <template slot="text">Read QR</template>
+          <template slot="text">Сканировать QR-код</template>
           <!-- <template slot="icon">icon html</template> -->
         </Button>
       </div>
+
+      <div></div>
+
       <div v-if="barcode" class="mx-2 mt-6 text-center">
         <b>Result:</b>
         <br />
         {{ this.barcode.result }}
       </div>
+
       <!-- <Shimmer /> -->
       <!--<SurveyCard-->
       <!--url="http://"-->
@@ -56,6 +66,8 @@ export default {
   data() {
     return {
       barcode: "",
+      id: "",
+      balance: 0,
       // modal: {
       //   show: false,
       // },
@@ -64,6 +76,7 @@ export default {
   },
   methods: {
     setBarcode(barcode) {
+      // loyality?user_id:3&product_id:42
       this.barcode = barcode;
     },
   },
