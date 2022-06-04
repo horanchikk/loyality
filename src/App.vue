@@ -69,8 +69,7 @@
     <Footer v-if="user.userType == 'cashier'">
       <Button
         class="w-full flex gap-5 items-center justify-center"
-        action="barcode"
-        @click="setBarcode"
+        @click="readQr"
       >
         <p>Сканировать QR-код</p>
         <i class="pi pi-qrcode" />
@@ -155,6 +154,8 @@ import InputMask from "primevue/inputmask";
 import Toast from "primevue/toast";
 import products from "./assets/products.json";
 import firebase from "./firebase";
+import base64 from "base-64";
+import moby from "@mobyapps/moby.js";
 
 export default {
   name: "App",
@@ -172,7 +173,6 @@ export default {
   },
   data() {
     return {
-      barcode: "",
       products: products,
       user: {
         id: 0,
@@ -185,6 +185,8 @@ export default {
       qrcode: {
         size: 300,
         value: "",
+        barcode: "",
+        decoded: "",
       },
       dialog: {
         show: false,
@@ -197,36 +199,6 @@ export default {
     };
   },
   methods: {
-    setBarcode(barcode) {
-      this.barcode = barcode;
-    },
-    onSwiper(swiper) {
-      console.log(swiper);
-    },
-    onSlideChange() {
-      console.log("slide change");
-    },
-    scrollTop() {
-      window.scrollTo(0, 0);
-    },
-    setHeader(state) {
-      if (state == 1) {
-        return "Вход в аккаунт";
-      } else if (state == 2) {
-        return "Выход из аккаунта";
-      } else if (state == 3) {
-        return "Купон ";
-      }
-    },
-    sendlogin(state) {
-      if (state == false) {
-        this.dialog.show = true;
-        this.dialog.state = 2;
-      } else if (state == true) {
-        this.dialog.show = true;
-        this.dialog.state = 1;
-      }
-    },
     async login() {
       console.log("login");
       this.load.login = true;
@@ -243,7 +215,7 @@ export default {
           console.log(doc);
         } else {
           this.user.id = doc.id;
-          this.user.balance = doc.balance;
+          this.user.balance = doc.bal;
           this.user.userType = doc.userType;
           this.user.logged = true;
           this.dialog.show = false;
@@ -306,15 +278,49 @@ export default {
       });
       this.dialog.show = false;
     },
+    async readQr() {
+      const barcode = await moby.barcode.scan([moby.barcode.symbology.qr]);
+      if (base64.decode(barcode.split("?")[0]) == "loyality") {
+        this.qrcode.decoded("result", barcode);
+      } else {
+        this.$toast.add({
+          severity: "error",
+          summary: "Некорректный QR",
+          life: 3000,
+        });
+      }
+    },
     showQr(product_id) {
-      // loyality?user_id:3&product_id:42
+      // loyality?user_id:3&product_id:42&time:{UNIX}
       if (this.user.logged) {
-        this.qrcode.value = `loyality?user_id:${this.user.id}&product_id:${product_id}`;
+        const date = new Date();
+        let encode = `loyality?user_id:${
+          this.user.id
+        }&product_id:${product_id}&time:${date.getTime()}`;
+        this.qrcode.value = base64.encode(encode);
         this.dialog.state = 3;
         this.dialog.show = true;
       } else {
         this.dialog.state = 1;
         this.dialog.show = true;
+      }
+    },
+    sendlogin(state) {
+      if (state == false) {
+        this.dialog.show = true;
+        this.dialog.state = 2;
+      } else if (state == true) {
+        this.dialog.show = true;
+        this.dialog.state = 1;
+      }
+    },
+    setHeader(state) {
+      if (state == 1) {
+        return "Вход в аккаунт";
+      } else if (state == 2) {
+        return "Выход из аккаунта";
+      } else if (state == 3) {
+        return "Купон ";
       }
     },
   },
