@@ -37,7 +37,6 @@
             class="transition ease-in-out duration-200 p-4 my-10 shadow-xl rounded-lg hover:shadow-2xl"
             v-for="product in products"
             :key="product.id"
-            @click="scrollTop"
           >
             <div class="cursor-pointer">
               <!-- Id, Name, Price, Img -->
@@ -59,21 +58,24 @@
           </div>
         </div>
       </div>
-
-      <div v-if="barcode" class="mx-2 mt-6 text-center">
-        <b>Result:</b>
-        <br />
-        {{ this.barcode.result }}
-      </div>
     </Content>
     <Footer v-if="user.userType == 'cashier'">
-      <Button
-        class="w-full flex gap-5 items-center justify-center"
-        @click="readQr"
-      >
-        <p>Сканировать QR-код</p>
-        <i class="pi pi-qrcode" />
-      </Button>
+      <div class="flex justify-between">
+        <Button
+          class="flex gap-5 items-center justify-center"
+          @click="readQr('cashOut')"
+        >
+          <p>Снятие баллов</p>
+          <i class="pi pi-qrcode" />
+        </Button>
+        <Button
+          class="flex gap-5 items-center justify-center"
+          @click="readQr('cashIn')"
+        >
+          <p>Начисление баллов</p>
+          <i class="pi pi-qrcode" />
+        </Button>
+      </div>
     </Footer>
 
     <Toast position="bottom-center" />
@@ -100,7 +102,7 @@
 
         <div class="flex flex-col w-48">
           Пароль
-          <Password class="w-full" v-model="user.password" :feedback="false" />
+          <Password v-model="user.password" :feedback="false" />
         </div>
 
         <Button
@@ -220,11 +222,10 @@ export default {
           this.user.logged = true;
           this.dialog.show = false;
         }
-        // let doc = await firebase.regUser(this.user.phone, this.user.password);
       } else {
         this.$toast.add({
           severity: "error",
-          summary: "Введите логин и пароль",
+          summary: "Введите номер телефона и пароль",
           life: 3000,
         });
       }
@@ -278,25 +279,62 @@ export default {
       });
       this.dialog.show = false;
     },
-    async readQr() {
+    async readQr(state) {
       const barcode = await moby.barcode.scan([moby.barcode.symbology.qr]);
-      if (base64.decode(barcode.split("?")[0]) == "loyality") {
-        this.qrcode.decoded("result", barcode);
+      if (base64.decode(barcode).split("?")[0] == "loyality") {
+        this.qrcode.decoded = base64.decode(barcode);
       } else {
         this.$toast.add({
           severity: "error",
-          summary: "Некорректный QR",
+          summary: "Некорректный QR. Попробуйте ещё раз.",
           life: 3000,
         });
+        return null;
+      }
+      if (state == "cashIn") {
+        console.log(
+          base64.decode(barcode).split("?")[1].split("&")[0].split(":")[1]
+        );
+        try {
+          firebase.cashIn(
+            base64.decode(barcode).split("?")[1].split("&")[0].split(":")[1],
+            10000
+          );
+          this.$toast.add({
+            severity: "success",
+            summary: `Успешно`,
+            life: 3000,
+          });
+        } catch (e) {
+          this.$toast.add({
+            severity: "error",
+            summary: `Ошибка сервера `,
+            life: 3000,
+          });
+        }
+      } else if (state == "cashOut") {
+        const product_id = base64
+          .decode(barcode)
+          .split("?")[1]
+          .split("&")[1]
+          .split(":")[1];
+        for (let i = 0; i < products.length; i++) {
+          if (products[i]["id"] == product_id) {
+            const price = products[i]["price"];
+            console.log(price);
+          }
+        }
       }
     },
     showQr(product_id) {
-      // loyality?user_id:3&product_id:42&time:{UNIX}
+      // loyality?user_id:{USER_ID}}&product_id:42&time:{UNIX}&balance:{USER_BALANCE}
       if (this.user.logged) {
         const date = new Date();
         let encode = `loyality?user_id:${
           this.user.id
-        }&product_id:${product_id}&time:${date.getTime()}`;
+        }&product_id:${product_id}&time:${date.getTime()}&balance:${
+          this.user.balance
+        }`;
         this.qrcode.value = base64.encode(encode);
         this.dialog.state = 3;
         this.dialog.show = true;

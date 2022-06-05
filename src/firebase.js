@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { getFirestore, updateDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDj8fteo9_1BUeUhS_TDWKOR94OG3KTQn0",
@@ -60,6 +60,34 @@ export default {
       return info;
     } else {
       return "incorrect user or login";
+    }
+  },
+  async cashIn(userId, price) {
+    const querySnapshot = await getDocs(collection(db, "users"));
+    const userDocRef = doc(db, "users", userId);
+
+    try {
+      querySnapshot.forEach((doc) => {
+        if (doc.id == userId) {
+          updateDoc(userDocRef, { balance: doc.data().balance + price });
+        }
+      });
+    } catch (e) {
+      return e;
+    }
+  },
+  async cashOut(userId, price) {
+    const querySnapshot = await getDocs(collection(db, "users"));
+    const userDocRef = doc(db, "users", userId);
+
+    try {
+      querySnapshot.forEach((doc) => {
+        if (doc.id == userId) {
+          updateDoc(userDocRef, { balance: doc.data().balance - price });
+        }
+      });
+    } catch (e) {
+      return e;
     }
   },
 };
